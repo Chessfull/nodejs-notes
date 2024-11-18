@@ -1,4 +1,7 @@
+// ▼ With default http ▼
+
 // const http = require("http");
+
 // const routeHandler = require("./routes");
 
 // const server = http.createServer(routeHandler);
@@ -7,20 +10,32 @@
 
 // console.log("node.js server working at port 3000");
 
-const express = require("express");
+// ******* Express.js  *******
+const express = require("express"); // -> Adding express.js library
 
 const app = express();
 
-app.use("/about",(request, response) => {
-    response.end("About page");
-  });
+const path = require("path"); // -> This is a library for using path operations like join below
 
-app.use("/product/:id"/*:dynamic parameter*/,(request,response)=>{
+const userRoutes = require("./routes/user"); // -> Organize and calling routes from
+const adminRoutes=require("./routes/admin");
 
-    console.log(request.params); // -> Calling dynamic parameter, keeps as object {id:...}
-    response.end("Product detail page ...");
+app.use(
+  "/static" /* Displaying name customizable */,
+  express.static(path.join(__dirname, "public"))
+); // -> For static file settings
 
-})
+app.use(userRoutes); // -> Calling route module from organized way
+app.use(adminRoutes); // -> Calling route module from organized way
+
+app.use("/about", (request, response) => {
+  response.end("About page");
+});
+
+app.use("/product/:id" /*:dynamic parameter*/, (request, response) => {
+  console.log(request.params); // -> Calling dynamic parameter, keeps as object {id:...}
+  response.end("Product detail page ...");
+});
 
 app.use("/", (request, response, next) => {
   console.log("Middleware 1");
@@ -28,9 +43,9 @@ app.use("/", (request, response, next) => {
 });
 
 app.use("/", (request, response) => {
-    console.log("Middleware 2");
-    response.end("Middleware 2 finished ...");
-  });
+  console.log("Middleware 2");
+  response.end("Middleware 2 finished ...");
+});
 
 app.listen(3000, () => {
   console.log("3000 port started");
